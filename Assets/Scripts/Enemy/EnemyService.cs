@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 
 namespace CosmicCuration.Enemy
 {
+
     public class EnemyService
     {
         #region Dependencies
@@ -14,7 +15,8 @@ namespace CosmicCuration.Enemy
         #region Variables
         private bool isSpawning;
         private float currentSpawnRate;
-        private float spawnTimer; 
+        private float spawnTimer;
+        private EnemyPool enemyPool;
         #endregion
 
         #region Initialization
@@ -30,6 +32,7 @@ namespace CosmicCuration.Enemy
             isSpawning = true;
             currentSpawnRate = enemyScriptableObject.initialSpawnRate;
             spawnTimer = currentSpawnRate;
+            enemyPool = new EnemyPool(enemyPrefab, enemyScriptableObject);
         } 
         #endregion
 
@@ -59,7 +62,7 @@ namespace CosmicCuration.Enemy
 
         private void SpawnEnemyAtPosition(Vector2 spawnPosition, EnemyOrientation enemyOrientation)
         {
-            EnemyController spawnedEnemy = new EnemyController(enemyPrefab, enemyScriptableObject.enemyData);
+            EnemyController spawnedEnemy = enemyPool.GetEnemy();
             spawnedEnemy.Configure(spawnPosition, enemyOrientation);
         }
 
@@ -106,6 +109,8 @@ namespace CosmicCuration.Enemy
         }
 
         private void ResetSpawnTimer() => spawnTimer = currentSpawnRate;
+
+        public void ReturnEnemyToPool(EnemyController returnedEnemy) => enemyPool.ReturnToEnemyPool(returnedEnemy);
 
         public void SetEnemySpawning(bool setActive) => isSpawning = setActive;
     }
