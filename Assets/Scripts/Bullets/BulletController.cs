@@ -4,6 +4,7 @@ using CosmicCuration.Audio;
 
 namespace CosmicCuration.Bullets
 {
+
     public class BulletController : IBullet
     {
         private BulletView bulletView;
