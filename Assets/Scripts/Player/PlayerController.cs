@@ -3,6 +3,7 @@ using UnityEngine;
 using CosmicCuration.Bullets;
 using CosmicCuration.Audio;
 using CosmicCuration.VFX;
+using System.Collections;
 
 namespace CosmicCuration.Player
 {
@@ -100,7 +101,7 @@ namespace CosmicCuration.Player
         private void FireBulletAtPosition(Transform fireLocation)
         { 
             BulletController bulletToFire = bulletPool.GetBullet();
-            bulletToFire.ConfigureBullet(fireLocation);
+            bulletToFire.ConfigureBullet(fireLocation, playerView.gameObject);
             GameService.Instance.GetSoundService().PlaySoundEffects(SoundType.PlayerBullet);
         } 
 
@@ -120,10 +121,10 @@ namespace CosmicCuration.Player
             }
 
             if (currentHealth <= 0)
-                PlayerDeath();
+                GameService.Instance.StartCoroutine(PlayerDeath());
         }
 
-        private async void PlayerDeath()
+        private IEnumerator PlayerDeath()
         {
             Object.Destroy(playerView.gameObject);
             
@@ -135,7 +136,7 @@ namespace CosmicCuration.Player
             GameService.Instance.GetPowerUpService().SetPowerUpSpawning(false);
             
             // Wait for Player Ship Destruction.
-            await Task.Delay(playerScriptableObject.deathDelay * 1000);
+            yield return new WaitForSeconds(playerScriptableObject.deathDelay);
             GameService.Instance.GetUIService().EnableGameOverUI();
         }
 

@@ -8,6 +8,7 @@ namespace CosmicCuration.Bullets
     {
         private BulletView bulletView;
         private BulletScriptableObject bulletScriptableObject;
+        private GameObject owner;
 
         public BulletController(BulletView bulletViewPrefab, BulletScriptableObject bulletScriptableObject)
         {
@@ -16,8 +17,9 @@ namespace CosmicCuration.Bullets
             this.bulletScriptableObject = bulletScriptableObject;
         }
 
-        public void ConfigureBullet(Transform spawnTransform)
+        public void ConfigureBullet(Transform spawnTransform, GameObject owner)
         {
+            this.owner = owner;
             bulletView.gameObject.SetActive(true);
             bulletView.transform.position = spawnTransform.position;
             bulletView.transform.rotation = spawnTransform.rotation;
@@ -29,6 +31,11 @@ namespace CosmicCuration.Bullets
         {
             if (collidedGameObject.GetComponent<IDamageable>() != null)
             {
+                if (collidedGameObject.gameObject.Equals(owner))
+                {
+                    return;
+                }
+                
                 collidedGameObject.GetComponent<IDamageable>().TakeDamage(bulletScriptableObject.damage);
                 GameService.Instance.GetSoundService().PlaySoundEffects(SoundType.BulletHit);
                 GameService.Instance.GetVFXService().PlayVFXAtPosition(VFXType.BulletHitExplosion, bulletView.transform.position);
